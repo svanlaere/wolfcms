@@ -14,6 +14,20 @@
 // Make sure we hide ugly errrors
 error_reporting(0);
 
+// Define supported min/max versions
+define('MIN_PHP_VERSION', '8.1.0');
+define('MAX_PHP_VERSION', '8.2.0');
+
+define('MIN_MYSQL_VERSION', '5.6');
+define('MAX_MYSQL_VERSION', '9.0');
+
+define('MIN_MADB_VERSION', '5.5');
+define('MAX_MADB_VERSION', '10.4');
+
+// https://www.postgresql.org/support/versioning/
+define('MIN_PGSQL_VERSION', '11');
+define('MAX_PGSQL_VERSION', '12');
+
 define('INSTALL_SEQUENCE', true);
 
 define('CORE_ROOT', dirname(__FILE__).'/../../wolf');
