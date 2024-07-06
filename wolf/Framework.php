@@ -51,7 +51,7 @@ if (!defined('DEFAULT_ACTION'))     define('DEFAULT_ACTION', 'index');
 
 // Setting error display depending on debug mode or not
 error_reporting((DEBUG ? (E_ALL | E_STRICT) : 0));
-
+error_reporting(-1);
 // No more quotes escaped with a backslash
 if (PHP_VERSION < 5.3)
     set_magic_quotes_runtime(0);
@@ -64,11 +64,7 @@ if ( ! isset($_SESSION['initiated'])) {
     $_SESSION['initiated'] = true;
 }
 
-ini_set('date.timezone', DEFAULT_TIMEZONE);
-if(function_exists('date_default_timezone_set'))
-    date_default_timezone_set(DEFAULT_TIMEZONE);
-else
-    putenv('TZ='.DEFAULT_TIMEZONE);
+date_default_timezone_set(defined('DEFAULT_TIMEZONE') ? DEFAULT_TIMEZONE : 'UTC');
 
 /**
  * The Dispatcher class is responsible for mapping urls/routes to Controller methods.
