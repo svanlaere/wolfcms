@@ -15,8 +15,8 @@
 error_reporting(0);
 
 // Define supported min/max versions
-define('MIN_PHP_VERSION', '8.1.0');
-define('MAX_PHP_VERSION', '8.2.0');
+define('MIN_PHP_VERSION', '8.2.0');
+define('MAX_PHP_VERSION', '8.3.0');
 
 define('MIN_MYSQL_VERSION', '5.6');
 define('MAX_MYSQL_VERSION', '9.0');
