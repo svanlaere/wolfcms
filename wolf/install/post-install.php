@@ -13,10 +13,7 @@
  */
 
 /* Make sure we've been called using index.php */
-if (!defined('INSTALL_SEQUENCE')) {
-    echo '<p>Illegal call. Terminating.</p>';
-    exit();
-}
+defined('INSTALL_SEQUENCE') || exit('<p>Illegal call. Terminating.</p>');
 ?>
 
     <h1>Installation result <img src="install-logo.png" alt="Wolf CMS logo" class="logo" /></h1>

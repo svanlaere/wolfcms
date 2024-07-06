@@ -12,10 +12,7 @@
  */
 
 /* Make sure we've been called using index.php */
-if (!defined('INSTALL_SEQUENCE')) {
-    echo '<p>Illegal call. Terminating.</p>';
-    exit();
-}
+defined('INSTALL_SEQUENCE') || exit('<p>Illegal call. Terminating.</p>');
 
 if (!class_exists('PDO',false)) {
     echo '<p>Wolf CMS requires PDO support which was not detected. Terminating.</p>';

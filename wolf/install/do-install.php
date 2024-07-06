@@ -27,10 +27,7 @@
  */
 
 /* Make sure we've been called using index.php */
-if (!defined('INSTALL_SEQUENCE')) {
-    echo '<p>Illegal call. Terminating.</p>';
-    exit();
-}
+defined('INSTALL_SEQUENCE') || exit('<p>Illegal call. Terminating.</p>');
 
 require 'Template.php';
 require CORE_ROOT.'/app/models/AuthUser.php';

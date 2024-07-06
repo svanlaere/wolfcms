@@ -12,10 +12,7 @@
  */
 
 /* Make sure we've been called using index.php */
-if (!defined('INSTALL_SEQUENCE')) {
-    echo '<p>Illegal call. Terminating.</p>';
-    exit();
-}
+defined('INSTALL_SEQUENCE') || exit('<p>Illegal call. Terminating.</p>');
 
 $drivers = PDO::getAvailableDrivers();
 ?>
@@ -76,7 +73,7 @@ $drivers = PDO::getAvailableDrivers();
 
     <form action="index.php" method="post">
         <input type="hidden" name="install" value="1"/>
-        <table class="fieldset" cellpadding="0" cellspacing="0" border="0">
+        <table class="fieldset">
             <tr>
                 <td colspan="3"><h3>Database information</h3></td>
             </tr>
@@ -84,15 +81,7 @@ $drivers = PDO::getAvailableDrivers();
                 <td class="label"><label for="config_db_driver">Database driver</label></td>
                 <td class="field">
                     <select id="config_db_driver" name="config[db_driver]">
-                        <?php /*if (isset($_POST['dbtype']) && !empty($_POST['dbtype']) && $_POST['dbtype'] == 'sqlite') {
-                            echo '<option value="sqlite">SQLite 3</option>';
-                        }
-                        else if (isset($_POST['dbtype']) && !empty($_POST['dbtype']) && $_POST['dbtype'] == 'mysql') {
-                            echo '<option value="mysql">MySQL</option>';
-                        }
-                        else if (isset($_POST['dbtype']) && !empty($_POST['dbtype']) && $_POST['dbtype'] == 'pgsql') {
-                            echo '<option value="pgsql">PostgreSQL</option>';
-                        } else {*/
+                        <?php
                             if (in_array('mysql', $drivers)) {
                                 echo '<option value="mysql">MySQL</option>';
                             }
@@ -101,8 +90,8 @@ $drivers = PDO::getAvailableDrivers();
                             }
                             if (in_array('sqlite', $drivers)) {
                                 echo '<option value="sqlite">SQLite 3</option>';
-                            //}
-                        } ?>
+                            }
+                        ?>
                     </select>
                 </td>
                 <td class="help">Required.</td>
