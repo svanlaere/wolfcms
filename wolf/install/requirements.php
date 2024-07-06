@@ -22,7 +22,7 @@ if (!defined('INSTALL_SEQUENCE')) {
 $errors = false;
 
 // Check PHP version
-$check = (PHP_VERSION >= '5.3.0');
+$check = (PHP_VERSION >= MIN_PHP_VERSION);
 $php = '<span class="'.($check ? 'check' : 'notcheck');
 $php .= '">PHP '.PHP_VERSION.'</span>';
 if (!$check) $errors = true;
@@ -94,7 +94,7 @@ $https = '<span class="'.($check ? 'check' : 'notcheck').'">'.($check ? 'true' :
         for proper installation and operation of Wolf CMS unless otherwise specified in the footnotes.
     </p>
     <p>
-        Please make sure you either have: MySQL 4.1.x upwards, SQLite 3 or PostgreSQL available as a database.
+        Make sure you either have: MySQL <?php echo MIN_MYSQL_VERSION; ?>, MariaDB <?php echo MIN_MADB_VERSION; ?>, PostgreSQL <?php echo MIN_PGSQL_VERSION; ?> or SQLite 3.
     </p>
     <table>
         <thead>
@@ -105,7 +105,7 @@ $https = '<span class="'.($check ? 'check' : 'notcheck').'">'.($check ? 'true' :
         </thead>
         <tbody>
             <tr>
-                <td>PHP 5.1.2</td>
+                <td>PHP <?php echo MIN_PHP_VERSION; ?></td>
                 <td class="available"><?php echo $php; ?></td>
             </tr>
             <tr>
