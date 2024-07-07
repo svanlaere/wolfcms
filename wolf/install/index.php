@@ -14,6 +14,8 @@
 // Make sure we hide ugly errrors
 error_reporting(0);
 
+define('HTTPS', isset($_SERVER['HTTPS']) && filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN));
+
 // Define supported min/max versions
 define('MIN_PHP_VERSION', '8.2.0');
 define('MAX_PHP_VERSION', '8.3.0');
