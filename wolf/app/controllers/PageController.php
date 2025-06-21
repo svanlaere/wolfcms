@@ -437,12 +437,10 @@ class PageController extends Controller {
         foreach ($fields as $field) {
             use_helper('Kses');
             $data[$field] = kses(trim($data[$field]), array());
-            /*
+            
             if (!empty($data[$field]) && !Validate::alpha_comma($data[$field])) {
                 $errors[] = __('Illegal value for :fieldname field!', array(':fieldname' => $field));
-            }
-             * 
-             */
+            }  
         }
 
         // Check behaviour_id field
@@ -457,9 +455,8 @@ class PageController extends Controller {
         }
         
         // Make sure the title doesn't contain HTML
-        if (Setting::get('allow_html_title') == 'off') {
-            use_helper('Kses');
-            $data['title'] = kses(trim($data['title']), array());
+        if (Setting::get('allow_html_title') === 'off') {
+           $data['title'] = strip_tags(trim($data['title']));
         }
 
         // Create the page object to be manipulated and populate data
@@ -499,7 +496,9 @@ class PageController extends Controller {
             }
 
             // Set the errors to be displayed.
-            Flash::setNow('error', implode('<br/>', $errors));
+            if ($errors) {
+                Flash::setNow('error', implode('<br/>', $errors));
+            }
 
             // display things ...
             $this->setLayout('backend');
@@ -530,9 +529,13 @@ class PageController extends Controller {
             // Get data for parts of this page
             $data_parts = $_POST['part'];
             Flash::set('post_parts_data', (object) $data_parts);
+            
 
             if ($action == 'edit') {
                 $old_parts = PagePart::findByPageId($id);
+
+                var_dump($old_parts);
+                exit;
 
                 // check if all old page part are passed in POST
                 // if not ... we need to delete it!

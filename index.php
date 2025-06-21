@@ -161,7 +161,11 @@ if ($driver === 'sqlite') {
 $__FROG_CONN__ = $__CMS_CONN__;
 
 Record::connection($__CMS_CONN__);
-Record::getConnection()->exec("set names 'utf8'");
+
+$pdo = Record::getConnection();
+if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql') {
+    $pdo->exec("SET NAMES 'utf8'");
+}
 
 Setting::init();
 
