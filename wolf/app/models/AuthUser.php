@@ -69,7 +69,7 @@ class AuthUser {
      *
      * @param Record $user User object instance.
      */
-    static private final function setInfos(Record $user) {
+    static private function setInfos(Record $user) {
         $_SESSION[self::SESSION_KEY] = array('username' => $user->username);
 
         self::$record = $user;
@@ -262,7 +262,7 @@ class AuthUser {
      * @param string $cookie    Cookie's content.
      * @return boolean          True if cookie is valid, otherwise false.
      */
-    static private final function challengeCookie($cookie) {
+    static private function challengeCookie($cookie) {
         $params = self::explodeCookie($cookie);
         if (isset($params['exp'], $params['id'], $params['digest'])) {
             if ( ! $user = User::findById($params['id']))
@@ -281,7 +281,7 @@ class AuthUser {
      * @param string $cookie    Cookie's content.
      * @return array            Exploded cookie.
      */
-    static private final function explodeCookie($cookie) {
+    static private function explodeCookie($cookie) {
         $pieces = explode('&', $cookie);
 
         if (count($pieces) < 2)
@@ -297,7 +297,7 @@ class AuthUser {
     /**
      * Eats (destroys) a cookie.
      */
-    static private final function eatCookie() {
+    static private function eatCookie() {
         setcookie(self::COOKIE_KEY, false, $_SERVER['REQUEST_TIME']-COOKIE_LIFE, '/', null, (isset($_ENV['SERVER_PROTOCOL']) && (strpos($_ENV['SERVER_PROTOCOL'],'https') || strpos($_ENV['SERVER_PROTOCOL'],'HTTPS'))));
     }
 
@@ -308,7 +308,7 @@ class AuthUser {
      * @param User      $user   A User object.
      * @return string           The actual cookie content.
      */
-    static private final function bakeUserCookie($time, User $user) {
+    static private function bakeUserCookie($time, User $user) {
         use_helper('Hash');
         $hash = new Crypt_Hash('sha256');
 
