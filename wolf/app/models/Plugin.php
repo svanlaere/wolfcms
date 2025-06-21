@@ -293,7 +293,7 @@ class Plugin {
         }
 
         self::$controllers[$plugin_id] = (object) array(
-            'label' => ucfirst($label),
+            'label' => ucfirst((string)$label),
             'class_name' => $class_name,
             'file'	=> $file,
             'permissions' => $permissions,
