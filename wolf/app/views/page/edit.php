@@ -133,9 +133,9 @@ if ($action == 'edit') { ?>
                     <label for="page_valid_until"><?php echo __('Valid until date'); ?></label>
                   </td>
                   <td class="field">
-                    <input id="page_valid_until" maxlength="10" name="page[valid_until]" size="10" type="text" value="<?php echo substr($page->valid_until, 0, 10); ?>" />
+                    <input id="page_valid_until" maxlength="10" name="page[valid_until]" size="10" type="text" value="<?php echo htmlspecialchars($page->valid_until ? substr($page->valid_until, 0, 10) : ''); ?>" />
                     <img onclick="displayDatePicker('page[valid_until]');" src="<?php echo PATH_PUBLIC;?>wolf/admin/images/icon_cal.gif" alt="<?php echo __('Show Calendar'); ?>" />
-                    <input id="page_valid_until_time" maxlength="8" name="page[valid_until_time]" size="8" type="text" value="<?php echo substr($page->valid_until, 11); ?>" />
+                    <input id="page_valid_until_time" maxlength="8" name="page[valid_until_time]" size="8" type="text" value="<?php echo htmlspecialchars($page->valid_until ? substr($page->valid_until, 0, 10) : ''); ?>" />
                   </td>
                 </tr>
                 <?php endif; ?>
