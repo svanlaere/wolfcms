@@ -321,22 +321,13 @@ class AuthUser {
      * @param   int     $max  The maximum number of characters in the salt.
      * @return  string        The salt.
      */
-    static public final function generateSalt($max = 32) {
-        use_helper('Hash');
-        $hash = new Crypt_Hash('sha256');
+    static public final function generateSalt($length = 32)
+    {
+        // each byte gives two hex characters, so we need ceil($length / 2) bytes
+        $bytes = random_bytes((int) ceil($length / 2));
 
-        $base = rand(0, 1000000) . microtime(true) . rand(0, 1000000) . rand(0, microtime(true));
-        $salt = bin2hex($hash->hash($base));
-
-        if($max < 32){
-            $salt = substr($salt, 0, $max);
-        }
-
-        if($max > 32){
-            $salt = substr($salt, 0, $max);
-        }
-
-        return $salt;
+        // convert to hex and trim to exactly $length characters
+        return substr(bin2hex($bytes), 0, $length);
     }
 
     /**
