@@ -30,7 +30,7 @@ if (!defined('IN_CMS')) {
 /**
  * The Archive class...
  */
-class Archive {
+class Archive extends stdClass {
 
     public function __construct(&$page, $params) {
         $this->page = & $page;
