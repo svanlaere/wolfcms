@@ -50,7 +50,7 @@ if (!defined('DEFAULT_CONTROLLER')) define('DEFAULT_CONTROLLER', 'index');
 if (!defined('DEFAULT_ACTION'))     define('DEFAULT_ACTION', 'index');
 
 // Setting error display depending on debug mode or not
-error_reporting((DEBUG ? (E_ALL | E_STRICT) : 0));
+error_reporting((DEBUG ? (E_ALL | E_DEPRECATED) : 0));
 
 // No more quotes escaped with a backslash
 if (PHP_VERSION < 5.3)
