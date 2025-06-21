@@ -128,7 +128,7 @@ final class SecureToken extends Record {
         return false;
     }
 
-    private static final function getToken($username, $url) {
+    private static function getToken($username, $url) {
         use_helper('Hash');
         $hash = new Crypt_Hash('sha256');
 
@@ -147,7 +147,7 @@ final class SecureToken extends Record {
         return false;
     }
 
-    private static final function getTokenTime($username, $url) {
+    private static function getTokenTime($username, $url) {
         use_helper('Hash');
         $hash = new Crypt_Hash('sha256');
         $time = 0;
