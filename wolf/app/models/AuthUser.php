@@ -56,8 +56,10 @@ class AuthUser {
             else
                 return false;
 
-        if ( ! $user)
-            return self::logout();
+        if ( ! $user) {
+            self::logout();
+            return false;
+        }
 
         self::setInfos($user);
 
