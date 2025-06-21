@@ -335,7 +335,7 @@ final class Dispatcher {
  * It is used as an abstraction layer so classes don't need to implement their
  * own database functionality.
  */
-class Record {
+class Record extends stdClass {
     const PARAM_BOOL = 5;
     const PARAM_NULL = 0;
     const PARAM_INT = 1;
