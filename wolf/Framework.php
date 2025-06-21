@@ -1869,8 +1869,9 @@ function get_url() {
 
     $url = '';
     foreach ($params as $param) {
-        if (strlen($param)) {
-            $url .= $param[0] == '#' ? $param: '/'. $param;
+        if (strlen((string)$param)) {
+            $param_str = (string)$param;
+            $url .= $param_str[0] == '#' ? $param_str : '/'. $param_str;
         }
     }
     return BASE_URL . preg_replace('/^\/(.*)$/', '$1', $url);
