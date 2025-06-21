@@ -358,7 +358,7 @@ class PageController extends Controller {
         Flash::set('post_data', (object) $data);
 
         // Add pre-save checks here
-        $errors = false;
+        $errors = [];
 
         // CSRF checks
         if (isset($_POST['csrf_token'])) {
@@ -491,7 +491,7 @@ class PageController extends Controller {
             // Rebuild parts
             $part = $_POST['part'];
             if (!empty($part)) {
-                $tmp = false;
+                $tmp = [];
                 foreach ($part as $key => $val) {
                     $tmp[$key] = (object) $val;
                 }
