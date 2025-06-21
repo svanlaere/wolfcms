@@ -80,6 +80,19 @@ define('CRYPT_HASH_MODE_MHASH',    2);
 define('CRYPT_HASH_MODE_HASH',     3);
 /**#@-*/
 
+if (!defined('CRYPT_HASH_MODE')) {
+    switch (true) {
+        case extension_loaded('hash'):
+            define('CRYPT_HASH_MODE', CRYPT_HASH_MODE_HASH);
+            break;
+        case extension_loaded('mhash'):
+            define('CRYPT_HASH_MODE', CRYPT_HASH_MODE_MHASH);
+            break;
+        default:
+            define('CRYPT_HASH_MODE', CRYPT_HASH_MODE_INTERNAL);
+    }
+}
+
 /**
  * Pure-PHP implementations of keyed-hash message authentication codes (HMACs) and various cryptographic hashing functions.
  *
@@ -151,19 +164,6 @@ class Crypt_Hash {
      */
     function Crypt_Hash($hash = 'sha1')
     {
-        if ( !defined('CRYPT_HASH_MODE') ) {
-            switch (true) {
-                case extension_loaded('hash'):
-                    define('CRYPT_HASH_MODE', CRYPT_HASH_MODE_HASH);
-                    break;
-                case extension_loaded('mhash'):
-                    define('CRYPT_HASH_MODE', CRYPT_HASH_MODE_MHASH);
-                    break;
-                default:
-                    define('CRYPT_HASH_MODE', CRYPT_HASH_MODE_INTERNAL);
-            }
-        }
-
         $this->setHash($hash);
     }
 
