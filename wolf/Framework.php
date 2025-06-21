@@ -1074,7 +1074,7 @@ abstract class Finder extends Record {
                 self::$cmd(array_splice($commands, 1), $options);
             }
             else {
-                throw new BadMethodCallException("Unknown find method including ${$commands[0]}.");
+                throw new BadMethodCallException("Unknown find method including {$commands[0]}.");
             }
         }
     }
@@ -1143,7 +1143,7 @@ abstract class Finder extends Record {
                 self::$cmd(array_splice($commands, 1), $options);
             }
             else {
-                $options['where'][] = "${commands[0]}=?";
+                $options['where'][] = "{$commands[0]}=?";
             }
         }
     }
@@ -1157,7 +1157,7 @@ abstract class Finder extends Record {
     private static function find_by(&$commands, &$options = array()) {
         for ($i=0; $i<count($commands); $i++) {
             if (!in_array($commands[$i], self::$reserved)) {
-                $options['where'][] = "${commands[$i]}=?";
+                $options['where'][] = $commands[$i] . "=?";
             }
             else {
                 $cmd = 'find_'.$commands[$i];
