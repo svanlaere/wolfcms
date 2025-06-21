@@ -16,7 +16,7 @@ error_reporting(0);
 
 define('INSTALL_SEQUENCE', true);
 
-define('CORE_ROOT', dirname(__FILE__).'/../../wolf');
+define('CORE_ROOT', dirname(__DIR__));
 define('CFG_FILE', '../../config.php');
 define('PUBLIC_ROOT', '../../public/');
 define('DEFAULT_ADMIN_USER', 'admin');
