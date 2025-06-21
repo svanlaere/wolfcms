@@ -327,7 +327,8 @@ class Crypt_Hash {
                     $output = mhash($this->hash, $text);
                     break;
                 case CRYPT_HASH_MODE_HASH:
-                    $output = hash($this->hash, $text, true);
+                    $algo = is_string($this->hash) ? $this->hash : 'sha1';
+                    $output = hash($algo, $text, true);
                     break;
                 case CRYPT_HASH_MODE_INTERNAL:
                     $output = call_user_func($this->hash, $text);
