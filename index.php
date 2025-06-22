@@ -11,6 +11,8 @@
 /**
  * @package Wolf_CMS
  */
+ 
+use function PHP81_BC\strftime; 
 
 //  Constants  ---------------------------------------------------------------
 define('IN_CMS', true);
