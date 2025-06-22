@@ -473,33 +473,33 @@ class Page extends Node {
         return $this->level;
     }
 
-
     /**
      * Return formatted date for page. Defaults to 'created on' date.
      *
-     * This function works through PHP's strftime() function. Please see
-     * http://php.net/strftime for more details on formatting options.
+     * Example usage (DateTime format codes):
+     *  'D, j M Y'        -> Wed, 20 Dec 2006
+     *  'l, j F Y'        -> Wednesday, 20 December 2006
+     *  'F j, Y, H:i A'   -> December 20, 2006, 08:30 PM
      *
-     * Example usage:
-     *  '%a, %e %b %Y'        -> Wed, 20 Dec 2006 <- (default)
-     *  '%A, %e %B %Y'        -> Wednesday, 20 December 2006
-     *  '%B %e, %Y, %H:%M %p' -> December 20, 2006, 08:30 pm
-     *
-     * @param string    Format string.
-     * @param which_one The date field to be used.
-     * @return string   Formatted date.
+     * @param string $format     Date format string (uses DateTime::format syntax).
+     * @param string $which_one  The date field to be used.
+     * @return string
      */
-    public function date($format='%a, %e %b %Y', $which_one='created') {
-        if ($which_one == 'update' || $which_one == 'updated')
-            return strftime($format, strtotime($this->updated_on));
-        else if ($which_one == 'publish' || $which_one == 'published')
-            return strftime($format, strtotime($this->published_on));
-        else if ($which_one == 'valid' || $which_one == 'valid')
-            return strftime($format, strtotime($this->valid_until));
-        else
-            return strftime($format, strtotime($this->created_on));
-    }
+    public function date(string $format = 'D, j M Y', string $which_one = 'created'): string
+    {
+        $dateField = match (strtolower($which_one)) {
+            'update', 'updated'    => $this->updated_on ?? null,
+            'publish', 'published' => $this->published_on ?? null,
+            'valid'                => $this->valid_until ?? null,
+            default                => $this->created_on ?? null,
+        };
 
+        try {
+            return (new DateTime($dateField))->format($format);
+        } catch (Exception $e) {
+            return ''; // Or fallback to a default string
+        }
+    }
 
     /**
      * Return content of the page or a specific part of the page.
