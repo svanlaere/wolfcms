@@ -23,6 +23,7 @@ define('PLUGINS_ROOT', CORE_ROOT.DS.'plugins');
 define('APP_PATH', CORE_ROOT.DS.'app');
 
 require_once(CORE_ROOT.DS.'utils.php');
+require_once(CORE_ROOT.DS.'php-8.1-strftime.php');
 
 $config_file = CMS_ROOT.DS.'config.php';
 require_once($config_file);
