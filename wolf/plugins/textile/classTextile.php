@@ -355,7 +355,7 @@ Applying Attributes:
 @define('txt_has_unicode',        @preg_match('/\pL/u', 'a')); // Detect if Unicode is compiled into PCRE
 
 // MVDKLEIJN - renamed to TextileFilter from Textile to work as Wolf CMS plugin
-class TextileFilter
+class TextileFilter extends stdClass
 {
 	var $hlgn;
 	var $vlgn;
@@ -370,6 +370,7 @@ class TextileFilter
 	var $pnct;
 	var $rel;
 	var $fn;
+	var $btag;
 
 	var $shelf = array();
 	var $restricted = false;
