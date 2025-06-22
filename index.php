@@ -158,9 +158,6 @@ if ($driver === 'sqlite') {
     $__CMS_CONN__->sqliteCreateFunction('date_format', 'mysql_function_date_format', 2);
 }
 
-// DEFINED ONLY FOR BACKWARDS SUPPORT - to be taken out before 0.9.0
-$__FROG_CONN__ = $__CMS_CONN__;
-
 Record::connection($__CMS_CONN__);
 
 $pdo = Record::getConnection();
