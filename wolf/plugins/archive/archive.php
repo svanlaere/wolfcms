@@ -27,6 +27,8 @@ if (!defined('IN_CMS')) {
     exit();
 }
 
+use function PHP81_BC\strftime;
+
 /**
  * The Archive class...
  */
@@ -190,6 +192,8 @@ class PageArchive extends Page {
         elseif ($use_date === '0') {
             return BASE_URL . trim($this->parent()->path() . '/' . $this->slug, '/') . ($this->path() != '' ? URL_SUFFIX : '');
         }
+        // Default fallback if $use_date is not '1' or '0'
+        return BASE_URL . trim($this->parent()->path() . '/' . $this->slug, '/') . ($this->path() != '' ? URL_SUFFIX : '');
     }
 
     public function title() {
