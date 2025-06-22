@@ -504,6 +504,7 @@ class PageController extends Controller {
 
             // display things ...
             $this->setLayout('backend');
+            /*
             $this->display('page/edit', array(
                 'action' => $action,
                 'csrf_token' => SecureToken::generateToken(BASE_URL.'page/'.$action.$csrf_id),
@@ -514,6 +515,7 @@ class PageController extends Controller {
                 'page_parts' => (object) $part,
                 'layouts' => Record::findAllFrom('Layout'))
             );
+            */
         }
 
         // Notify
