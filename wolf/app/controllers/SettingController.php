@@ -25,7 +25,7 @@ class SettingController extends Controller {
     /**
      * Used to check generic permissions for entire the controller.
      */
-    private static final function _checkPermission() {
+    private static function _checkPermission() {
         AuthUser::load();
         if (!AuthUser::isLoggedIn()) {
             redirect(get_url('login'));
@@ -69,7 +69,7 @@ class SettingController extends Controller {
     /**
      * Saves the settings.
      */
-    private final function _save() {
+    private function _save() {
         $data = $_POST['setting'];
 
         // CSRF checks
