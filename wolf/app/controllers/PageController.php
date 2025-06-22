@@ -473,6 +473,7 @@ class PageController extends Controller {
             $tags = $_POST['page_tag'];
             
             // Rebuild time fields
+            /* Todo: check if this is needed
             if (isset($page->created_on)) {
                 $page->created_on = $page->created_on.' '.$page->created_on_time;
             }
@@ -484,6 +485,7 @@ class PageController extends Controller {
             if (isset($page->valid_until)) {
                 $page->valid_until = $page->valid_until.' '.$page->valid_until_time;
             }
+            */
 
             // Rebuild parts
             $part = $_POST['part'];
@@ -529,13 +531,9 @@ class PageController extends Controller {
             // Get data for parts of this page
             $data_parts = $_POST['part'];
             Flash::set('post_parts_data', (object) $data_parts);
-            
 
             if ($action == 'edit') {
                 $old_parts = PagePart::findByPageId($id);
-
-                var_dump($old_parts);
-                exit;
 
                 // check if all old page part are passed in POST
                 // if not ... we need to delete it!
