@@ -13,7 +13,7 @@
  */
 
 /* Security measure */
-if (!defined('IN_CMS')) { exit(); }
+defined('IN_CMS') || exit();
 
 // Redirect to front page if user doesn't have appropriate roles.
 if (!AuthUser::hasPermission('admin_view')) {
