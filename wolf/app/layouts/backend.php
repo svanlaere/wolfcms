@@ -22,7 +22,7 @@ if (!AuthUser::hasPermission('admin_view')) {
 }
 
 // Setup some stuff...
-$ctrl = Dispatcher::getController(Setting::get('default_tab'));
+$ctrl = Dispatcher::getController();
 
 // Allow for nice title.
 // @todo improve/clean this up.
