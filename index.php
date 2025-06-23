@@ -153,7 +153,7 @@ if ($driver === 'mysql') {
 if ($driver === 'sqlite') {
     // Adding date_format function to SQLite 3 'mysql date_format function'
     if (! function_exists('mysql_date_format_function')) {
-        function mysql_function_date_format($date, $format) {
+        function mysql_date_format_function($date, $format) {
             return strftime($format, strtotime($date));
         }
     }
