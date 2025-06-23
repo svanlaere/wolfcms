@@ -157,7 +157,6 @@ if ($driver === 'sqlite') {
             return strftime($format, strtotime($date));
         }
     }
-    $__CMS_CONN__->sqliteCreateFunction('date_format', 'mysql_function_date_format', 2);
 }
 
 Record::connection($__CMS_CONN__);
