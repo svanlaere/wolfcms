@@ -40,7 +40,7 @@ if (!isset($title) || trim($title) == '') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?php echo (AuthUser::getRecord()->language) ?? 'en'; ?>">
     <head>
         <meta charset="utf-8">
 
