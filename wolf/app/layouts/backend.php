@@ -47,8 +47,8 @@ if (!isset($title) || trim($title) == '') {
         <title><?php use_helper('Kses'); echo $title . ' | ' . kses(Setting::get('admin_title'), array()); ?></title>
 
         <link rel="icon" href="<?php echo PATH_PUBLIC; ?>wolf/admin/images/favicon.ico">
-        <link href="<?php echo PATH_PUBLIC; ?>wolf/admin/stylesheets/admin.css" media="screen" type="text/css">
-        <link href="<?php echo PATH_PUBLIC; ?>wolf/admin/themes/<?php echo Setting::get('theme'); ?>/styles.css" id="css_theme" media="screen" type="text/css">
+        <link href="<?php echo PATH_PUBLIC; ?>wolf/admin/stylesheets/admin.css" media="screen">
+        <link href="<?php echo PATH_PUBLIC; ?>wolf/admin/themes/<?php echo Setting::get('theme'); ?>/styles.css" id="css_theme" media="screen" >
 
         <!-- IE6 PNG support fix -->
         <!--[if lt IE 7]>
@@ -63,25 +63,24 @@ if (!isset($title) || trim($title) == '') {
         <?php Observer::notify('view_backend_layout_head', CURRENT_PATH); ?>
 
         <script type="text/javascript" src="<?php echo PATH_PUBLIC; ?>wolf/admin/markitup/jquery.markitup.js"></script>
-        <link  type="text/css" href="<?php echo PATH_PUBLIC; ?>wolf/admin/markitup/skins/simple/style.css">
+        <link   href="<?php echo PATH_PUBLIC; ?>wolf/admin/markitup/skins/simple/style.css">
 
 <?php foreach(Plugin::$plugins as $plugin_id => $plugin): ?>
 <?php if (file_exists(CORE_ROOT . '/plugins/' . $plugin_id . '/' . $plugin_id . '.js')): ?>
         <script src="<?php echo PATH_PUBLIC; ?>wolf/plugins/<?php echo $plugin_id.'/'.$plugin_id; ?>.js"></script>
 <?php endif; ?>
 <?php if (file_exists(CORE_ROOT . '/plugins/' . $plugin_id . '/' . $plugin_id . '.css')): ?>
-        <link href="<?php echo PATH_PUBLIC; ?>wolf/plugins/<?php echo $plugin_id.'/'.$plugin_id; ?>.css" media="screen"  type="text/css">
+        <link href="<?php echo PATH_PUBLIC; ?>wolf/plugins/<?php echo $plugin_id.'/'.$plugin_id; ?>.css" media="screen"  >
 <?php endif; ?>
 <?php endforeach; ?>
 <?php foreach(Plugin::$stylesheets as $plugin_id => $stylesheet): ?>
-        <link type="text/css" href="<?php echo PATH_PUBLIC; ?>wolf/plugins/<?php echo $stylesheet; ?>" media="screen" >
+        <link  href="<?php echo PATH_PUBLIC; ?>wolf/plugins/<?php echo $stylesheet; ?>" media="screen" >
 <?php endforeach; ?>
 <?php foreach(Plugin::$javascripts as $jscript_plugin_id => $javascript): ?>
         <script src="<?php echo PATH_PUBLIC; ?>wolf/plugins/<?php echo $javascript; ?>"></script>
 <?php endforeach; ?>
 
-        <script type="text/javascript">
-        // <![CDATA[
+        <script>
                 $(document).ready(function() {
                         (function showMessages(e) {
                                 e.fadeIn('slow')
@@ -120,7 +119,6 @@ if (!isset($title) || trim($title) == '') {
                                 $(this).trigger('wolfSwitchFilterIn', [newFilter, elem]);
                         });
                 });
-                // ]]>
                 </script>
 
 <?php $action = Dispatcher::getAction(); ?>
