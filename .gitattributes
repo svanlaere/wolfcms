@@ -12,7 +12,7 @@ CHANGELOG.md merge=union
 .github export-ignore
 
 # Set default behaviour, in case users don't have core.autocrlf set.
-* text
+* text=auto
 
 # Denote all files that are truly binary and should not be modified.
 *.png binary
