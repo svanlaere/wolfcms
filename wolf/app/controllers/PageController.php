@@ -473,19 +473,15 @@ class PageController extends Controller {
             $tags = $_POST['page_tag'];
             
             // Rebuild time fields
-            /* Todo: check if this is needed
-            if (isset($page->created_on)) {
-                $page->created_on = $page->created_on.' '.$page->created_on_time;
+            foreach (['created_on', 'published_on', 'valid_until'] as $field) {
+                $timeField = $field . '_time';
+                // Check that the field exists and is not an empty string or null
+                if (isset($page->$field, $page->$timeField) && $page->$field !== '') {
+                    $datetimeString = "{$page->$field} {$page->$timeField}";
+                    $page->$field = date('Y-m-d H:i:s', strtotime($datetimeString));
+                    unset($page->$timeField); // remove *_time field
+                }
             }
-            
-            if (isset($page->published_on)) {
-                $page->published_on = $page->published_on.' '.$page->published_on_time;
-            }
-            
-            if (isset($page->valid_until)) {
-                $page->valid_until = $page->valid_until.' '.$page->valid_until_time;
-            }
-            */
 
             // Rebuild parts
             $part = $_POST['part'];
@@ -504,7 +500,7 @@ class PageController extends Controller {
 
             // display things ...
             $this->setLayout('backend');
-            /*
+            
             $this->display('page/edit', array(
                 'action' => $action,
                 'csrf_token' => SecureToken::generateToken(BASE_URL.'page/'.$action.$csrf_id),
@@ -515,7 +511,7 @@ class PageController extends Controller {
                 'page_parts' => (object) $part,
                 'layouts' => Record::findAllFrom('Layout'))
             );
-            */
+            
         }
 
         // Notify
