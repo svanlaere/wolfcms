@@ -471,8 +471,8 @@ class PageController extends Controller {
         // Upon errors, rebuild original page and return to screen with errors
         if (false !== $errors) {
             $tags = $_POST['page_tag'];
-            
-            // Rebuild time fields
+
+            // 
             foreach (['created_on', 'published_on', 'valid_until'] as $field) {
                 $timeField = $field . '_time';
                 // Check that the field exists and is not an empty string or null
@@ -501,6 +501,7 @@ class PageController extends Controller {
             // display things ...
             $this->setLayout('backend');
             
+            /*
             $this->display('page/edit', array(
                 'action' => $action,
                 'csrf_token' => SecureToken::generateToken(BASE_URL.'page/'.$action.$csrf_id),
@@ -511,6 +512,7 @@ class PageController extends Controller {
                 'page_parts' => (object) $part,
                 'layouts' => Record::findAllFrom('Layout'))
             );
+            */
             
         }
 
