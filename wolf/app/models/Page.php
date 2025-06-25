@@ -761,20 +761,26 @@ class Page extends Node {
 
 
     public function beforeUpdate() {
-        $this->created_on = $this->created_on.' '.$this->created_on_time;
-        unset($this->created_on_time);
+        if (property_exists($this, 'created_on_time') && !empty($this->created_on_time)) {
+            $this->created_on = $this->created_on . ' ' . $this->created_on_time;
+            unset($this->created_on_time);
+        }
 
         if (!empty($this->published_on)) {
-            $this->published_on = $this->published_on.' '.$this->published_on_time;
-            unset($this->published_on_time);
+            if (property_exists($this, 'published_on_time') && !empty($this->published_on_time)) {
+                $this->published_on = $this->published_on . ' ' . $this->published_on_time;
+                unset($this->published_on_time);
+            }
         }
         else if ($this->status_id == Page::STATUS_PUBLISHED) {
             $this->published_on = date('Y-m-d H:i:s');
         }
 
         if (!empty($this->valid_until)) {
-            $this->valid_until = $this->valid_until.' '.$this->valid_until_time;
-            unset($this->valid_until_time);
+            if (property_exists($this, 'valid_until_time') && !empty($this->valid_until_time)) {
+                $this->valid_until = $this->valid_until . ' ' . $this->valid_until_time;
+                unset($this->valid_until_time);
+            }
             if ($this->valid_until < date('Y-m-d H:i:s')) {
                 $this->status_id = Page::STATUS_ARCHIVED;
             }
