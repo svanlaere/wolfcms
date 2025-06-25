@@ -499,7 +499,7 @@ class PageController extends Controller {
             }
 
             // display things ...
-            $this->setLayout('backend');
+            //$this->setLayout('backend');
             
             /*
             $this->display('page/edit', array(
