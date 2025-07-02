@@ -72,13 +72,13 @@ function renderDbDriverOptions(array $availableDrivers, ?string $selectedDriver 
         const dbPortInput = document.getElementById('config_db_port');
 
         // PHP-generated SQLite path (ensure proper escaping on PHP side)
-        const sqlitePath = '<?php echo str_replace(search: "\\\\", replace: "/", subject: realpath(path: dirname(path: __FILE__) . "/../../../")) . ".db.sq3" ?>';
-
+        const sqlitePath = <?php echo json_encode(value: str_replace(search: "\\", replace: "/", subject: realpath(path: dirname(path: __FILE__) . "/../../../")) . "/.db.sq3"); ?>;
+        
+        // Helper functions to show/hide elements
         const show = (...elements) => elements.forEach(el => el?.classList.remove('hidden'));
         const hide = (...elements) => elements.forEach(el => el?.classList.add('hidden'));
 
         // Add CSS class `.hidden { display: none !important; }` to your CSS for this to work
-
         const onDriverChange = () => {
             const value = driverSelect.value;
 
