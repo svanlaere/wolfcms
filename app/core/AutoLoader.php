@@ -1,93 +1,274 @@
 <?php
 
+declare(strict_types=1);
+
+use RecursiveCallbackFilterIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
 /**
- * The AutoLoader class is an OO hook into PHP's __autoload functionality.
+ * Autoloader with hybrid support for:
+ * - PSR-4
+ * - Legacy folder scanning
+ * - File class map
+ * - Runtime + persistent cache
+ * - Skipped paths
+ * - Composer integration (priority)
  *
- * You can add use the AutoLoader class to add singe and multiple files as well
- * entire folders.
- *
- * Examples:
- *
- * Single Files   - AutoLoader::addFile('Blog','/path/to/Blog.php');
- * Multiple Files - AutoLoader::addFile(array('Blog'=>'/path/to/Blog.php','Post'=>'/path/to/Post.php'));
- * Whole Folders  - AutoLoader::addFolder('path');
- *
- * When adding an entire folder, each file should contain one class having the
- * same name as the file without ".php" (Blog.php should contain one class Blog)
- *
+ * PHP 8.3+ syntax and features used where appropriate.
+ * Compatible with static analysis (PHPStan, Psalm)
  */
-class AutoLoader {
-    protected static $files = array();
-    protected static $folders = array();
+final class AutoLoader
+{
+    /** @var array<class-string, string> */
+    protected static array $classMap = [];
 
-    /**
-     * Register the AutoLoader on the SPL autoload stack.
-     */
-    public static function register()
+    /** @var array<non-empty-string, string> */
+    protected static array $psr4Prefixes = [];
+
+    /** @var list<string> */
+    protected static array $legacyFolders = [];
+
+    /** @var array<class-string, string> */
+    protected static array $resolvedCache = [];
+
+    /** @var array<string, int> */
+    protected static array $fileTimestamps = [];
+
+    /** @var array<string, bool> */
+    protected static array $skipPaths = [];
+
+    protected static ?string $cacheFile = null;
+
+    protected static bool $cacheDirty = false;
+
+    public static bool $debug = false;
+
+    public static function register(?string $cacheFile = null): void
     {
-        spl_autoload_register(array('AutoLoader', 'load'), true, true);
-    }
-
-    /**
-     * Adds a (set of) file(s) for autoloading.
-     *
-     * Examples:
-     * <code>
-     *      AutoLoader::addFile('Blog','/path/to/Blog.php');
-     *      AutoLoader::addFile(array('Blog'=>'/path/to/Blog.php','Post'=>'/path/to/Post.php'));
-     * </code>
-     *
-     * @param mixed $class_name Classname or array of classname/path pairs.
-     * @param mixed $file       Full path to the file that contains $class_name.
-     */
-    public static function addFile($class_name, $file=null) {
-        if ($file == null && is_array($class_name)) {
-            self::$files = array_merge(self::$files, $class_name);
-        } else {
-            self::$files[$class_name] = $file;
+        if ($cacheFile !== null) {
+            self::$cacheFile = $cacheFile;
+            self::loadCache();
+            register_shutdown_function(self::saveCache(...));
         }
+
+        // Composer autoloader will remain primary
+        spl_autoload_register(self::load(...), prepend: false);
     }
 
-    /**
-     * Adds an entire folder or set of folders for autoloading.
-     *
-     * Examples:
-     * <code>
-     *      AutoLoader::addFolder('/path/to/classes/');
-     *      AutoLoader::addFolder(array('/path/to/classes/','/more/here/'));
-     * </code>
-     *
-     * @param mixed $folder Full path to a folder or array of paths.
-     */
-    public static function addFolder($folder) {
-        if ( ! is_array($folder)) {
-            $folder = array($folder);
-        }
-        self::$folders = array_merge(self::$folders, $folder);
+    public static function addPsr4(string $prefix, string $baseDir): void
+    {
+        $prefix = rtrim($prefix, '\\') . '\\';
+        $baseDir = rtrim($baseDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        self::$psr4Prefixes[$prefix] = $baseDir;
     }
 
-    /**
-     * Loads a requested class.
-     *
-     * @param string $class_name
-     */
-    public static function load($class_name) {
-        if (isset(self::$files[$class_name])) {
-            if (file_exists(self::$files[$class_name])) {
-                require self::$files[$class_name];
-                return;
+    public static function addFile(string|array $class, ?string $file = null): void
+    {
+        if (is_array($class)) {
+            foreach ($class as $cls => $f) {
+                self::$classMap[$cls] = $f;
             }
-        } else {
-            foreach (self::$folders as $folder) {
-                $folder = rtrim($folder, DIRECTORY_SEPARATOR);
-                $file = $folder.DIRECTORY_SEPARATOR.str_replace('\\', DIRECTORY_SEPARATOR, $class_name).'.php';
-                if (file_exists($file)) {
-                    require $file;
-                    return;
+        } elseif ($file !== null) {
+            self::$classMap[$class] = $file;
+        }
+    }
+
+    public static function addFileFromFolder(string $folder): void
+    {
+        self::$classMap += self::scanFolder($folder);
+    }
+
+    public static function addFolder(string|array $folders): void
+    {
+        foreach ((array)$folders as $folder) {
+            self::$legacyFolders[] = $folder;
+            self::$classMap += self::scanFolder($folder);
+        }
+    }
+
+    public static function skipPath(string|array $paths): void
+    {
+        foreach ((array)$paths as $path) {
+            if ($real = realpath($path)) {
+                self::$skipPaths[$real] = true;
+            }
+        }
+    }
+
+    public static function load(string $class): void
+    {
+        if ($path = self::getResolvedPath($class)) {
+            require $path;
+            return;
+        }
+
+        if (self::$debug) {
+            error_log("AutoLoader: Class '{$class}' not found.");
+        }
+    }
+
+    /**
+     * Get resolved path for a class.
+     *
+     * @param class-string $class
+     * @return string|null
+     */
+    public static function getResolvedPath(string $class): ?string
+    {
+        if (isset(self::$resolvedCache[$class]) && is_file(self::$resolvedCache[$class])) {
+            return self::$resolvedCache[$class];
+        }
+
+        if (isset(self::$classMap[$class]) && is_file(self::$classMap[$class])) {
+            return self::cacheResolved($class, self::$classMap[$class]);
+        }
+
+        foreach (self::$psr4Prefixes as $prefix => $baseDir) {
+            if (str_starts_with($class, $prefix)) {
+                $relativePath = str_replace('\\', DIRECTORY_SEPARATOR, substr($class, strlen($prefix))) . '.php';
+                $fullPath = $baseDir . $relativePath;
+                if (is_file($fullPath)) {
+                    return self::cacheResolved($class, $fullPath);
                 }
             }
         }
-        throw new Exception("AutoLoader could not find file for '{$class_name}'.");
+
+        foreach (self::$legacyFolders as $folder) {
+            $map = self::scanFolder($folder);
+            if (isset($map[$class])) {
+                return self::cacheResolved($class, $map[$class]);
+            }
+        }
+
+        return null;
     }
 
-} // end AutoLoader class
+    /**
+     * Scan a directory for PHP classes.
+     *
+     * @param string $dir
+     * @return array<class-string, string>
+     */
+    protected static function scanFolder(string $dir): array
+    {
+        $map = [];
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveCallbackFilterIterator(
+                new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
+                fn($file) => !self::shouldSkip($file->getRealPath())
+            )
+        );
+
+        foreach ($iterator as $file) {
+            if (!$file->isFile() || $file->getExtension() !== 'php') {
+                continue;
+            }
+
+            $path = $file->getRealPath();
+            $mtime = $file->getMTime();
+
+            if (isset(self::$fileTimestamps[$path]) && self::$fileTimestamps[$path] === $mtime) {
+                continue;
+            }
+
+            $contents = file_get_contents($path);
+            if (!$contents) {
+                continue;
+            }
+
+            if (preg_match_all('/^\s*(?:abstract\s+|final\s+)?(?:class|interface|trait)\s+(\w+)/mi', $contents, $matches)) {
+                $namespace = '';
+                if (preg_match('/^\s*(?:\/\/.*\n|\s*)*namespace\s+([^;]+);/mi', $contents, $nsMatch)) {
+                    $namespace = trim($nsMatch[1]) . '\\';
+                }
+
+                foreach ($matches[1] as $className) {
+                    $fqcn = $namespace . $className;
+                    $map[$fqcn] = $path;
+                }
+
+                self::$fileTimestamps[$path] = $mtime;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * Determine if a path should be skipped.
+     *
+     * @param string|false $path
+     * @return bool
+     */
+    protected static function shouldSkip(string|false $path): bool
+    {
+        if (!$path) return true;
+
+        foreach (self::$skipPaths as $skip => $_) {
+            if (str_starts_with($path, $skip)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Cache resolved class path.
+     *
+     * @param class-string $class
+     * @param string $path
+     * @return string
+     */
+    protected static function cacheResolved(string $class, string $path): string
+    {
+        self::$resolvedCache[$class] = $path;
+        self::$cacheDirty = true;
+        return $path;
+    }
+
+    /**
+     * Load cache from file.
+     */
+    protected static function loadCache(): void
+    {
+        if (!self::$cacheFile || !file_exists(self::$cacheFile)) return;
+
+        $data = json_decode(file_get_contents(self::$cacheFile), true);
+        if (is_array($data)) {
+            self::$resolvedCache = $data;
+        }
+    }
+
+    /**
+     * Save resolved class cache to file.
+     */
+    public static function saveCache(): void
+    {
+        if (!self::$cacheFile || !self::$cacheDirty) return;
+
+        file_put_contents(
+            self::$cacheFile,
+            json_encode(self::$resolvedCache, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+            LOCK_EX
+        );
+
+        self::$cacheDirty = false;
+    }
+
+    /**
+     * Flush memory and persistent cache.
+     */
+    public static function flushCache(): void
+    {
+        self::$resolvedCache = [];
+        self::$fileTimestamps = [];
+        self::$cacheDirty = true;
+
+        if (self::$cacheFile && file_exists(self::$cacheFile)) {
+            unlink(self::$cacheFile);
+        }
+    }
+}
