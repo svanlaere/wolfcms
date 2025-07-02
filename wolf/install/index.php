@@ -37,26 +37,47 @@ require_once CORE_ROOT.'/Framework.php';
     <div id="content">
 
 <?php
-if (isset($_POST['install']) && !isset($_POST['commit']) && file_exists(CFG_FILE) && !(filesize(CFG_FILE) > 1)) {
-    require_once 'install.php';
+// PHP 8.3 Refactor
+
+// Check if config file exists and has content
+function isConfigFileValid(): bool {
+    return file_exists(CFG_FILE) && filesize(CFG_FILE) > 1;
 }
-else if (isset($_POST['install']) && isset($_POST['commit']) && isset($_POST['config'])) {
-    $config = $_POST['config'];
-    require_once 'do-install.php';
-    require_once 'post-install.php';
+
+// Using match expression for clearer intent
+$action = match (true) {
+    isset($_POST['install']) && !isset($_POST['commit']) && !isConfigFileValid() => 'install',
+    isset($_POST['install'], $_POST['commit'], $_POST['config']) => 'do_install',
+    isset($_POST['upgrade'], $_POST['commit']) && isConfigFileValid() => 'do_upgrade',
+    !isset($_POST['upgrade'], $_POST['commit']) && isConfigFileValid() => 'upgrade',
+    default => 'requirements',
+};
+
+switch ($action) {
+    case 'install':
+        require_once 'install.php';
+        break;
+
+    case 'do_install':
+        $config = $_POST['config'];
+        require_once 'do-install.php';
+        require_once 'post-install.php';
+        break;
+
+    case 'do_upgrade':
+        require_once CFG_FILE;
+        require_once CORE_ROOT . '/Framework.php';
+        require_once 'do-upgrade.php';
+        break;
+
+    case 'upgrade':
+        require_once 'upgrade.php';
+        break;
+
+    default:
+        require_once 'requirements.php';
+        break;
 }
-else if (isset($_POST['upgrade']) && isset($_POST['commit']) && file_exists(CFG_FILE) && (filesize(CFG_FILE) > 1)) {
-    require_once CFG_FILE;
-    require_once CORE_ROOT.'/Framework.php';
-    require_once 'do-upgrade.php';
-}
-else if (!isset($_POST['upgrade']) && !isset($_POST['commit']) && file_exists(CFG_FILE) && (filesize(CFG_FILE) > 1)) {
-    require_once 'upgrade.php';
-}
-else {
-    require_once 'requirements.php';
-}
-?>
 
     </div>
     <div id="footer">
