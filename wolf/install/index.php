@@ -12,14 +12,14 @@
  */
 
 // Make sure we hide ugly errrors
-error_reporting(0);
+error_reporting(error_level: 0);
 
-define('INSTALL_SEQUENCE', true);
+define(constant_name: 'INSTALL_SEQUENCE', true);
 
-define('CORE_ROOT', dirname(__DIR__));
-define('CFG_FILE', '../../config.php');
-define('PUBLIC_ROOT', '../../public/');
-define('DEFAULT_ADMIN_USER', 'admin');
+define(constant_name: 'CORE_ROOT', dirname(__DIR__));
+define(constant_name: 'CFG_FILE', '../../config.php');
+define(constant_name: 'PUBLIC_ROOT', '../../public/');
+define(constant_name: 'DEFAULT_ADMIN_USER', 'admin');
 require_once CORE_ROOT.'/Framework.php';
 ?>
 
